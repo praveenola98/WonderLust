@@ -124,10 +124,10 @@ async function main() {
 
 
 // home route
-app.get("/", async(req, res) => {
-    let alllistings = await Listing.find({})
-    res.render("listings/index.ejs", { alllistings })
-})
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+});
+
 
 
 

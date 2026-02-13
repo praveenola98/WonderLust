@@ -1,0 +1,104 @@
+<% layout("layouts/boilerplate")%>
+
+    </style>
+
+    <body>
+        <div class="row">
+            <div class="col-8">
+                <h3>Add new Location</h3>
+                <br />
+                <form action="/listings" method="post" class="needs-validation" novalidate
+                    enctype="multipart/form-data">
+
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" placeholder="enter title" name="listing[title]" class="form-control"
+                            required>
+                        <div class="valid-feedback">Title Looks good!</div>
+                        <!-- <div class="invalid-feedback">Please choose a username.</div> -->
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+
+                        <select name="listing[category]" id="category" class="form-control" required>
+                            <option value="" disabled selected>Select your category</option>
+
+                            <option value="mountains">mountains</option>
+                            <option value="Rooms">Rooms</option>
+                            <option value="Iconic Cities">Iconic Cities</option>
+                            <option value="Castles">Castles</option>
+                            <option value="Amazing Pools">Amazing Pools</option>
+                            <option value="Camping">Camping</option>
+                            <option value="Farm">Farm</option>
+                            <option value="Arctic">Arctic</option>
+                            <option value="Snow Hills">Snow Hills</option>
+                            <option value="forest">forest</option>
+                            <option value="HighWay Side">HighWay Side</option>
+                            <option value="Town">Town</option>
+                            <option value="Hostel">Hostel</option>
+                            <option value="River Side">River Side</option>
+                        </select>
+
+                        <div class="invalid-feedback">
+                            Please select a category
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <input type="text" placeholder="enter description" name="listing[description]"
+                            class="form-control" required>
+                        <div class="invalid-feedback">Please enter description</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Image</label>
+                        <input type="file" name="listing[image]" class="form-control" required>
+
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" placeholder="enter price" name="listing[price]" class="form-control"
+                            required>
+                        <div class="invalid-feedback">Please Set your Price</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col-md-4">
+                            <label for="location" class="form-label">Location</label>
+                            <input type="text" placeholder="enter locaation" name="listing[location]"
+                                class="form-control" required>
+                            <div class="invalid-feedback">Please Enter Location</div>
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="country" class="form-label">Country</label>
+                            <input type="text" placeholder="enter country" name="listing[country]" class="form-control"
+                                required>
+                            <div class="invalid-feedback">Please Enter Country</div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+                            <label class="form-check-label" for="invalidCheck">
+                                Agree to terms and conditions
+                            </label>
+                            <div class="invalid-feedback">
+                                You must agree before submitting.
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+
+                    <button class="add-btn "
+                        style="color:white; border-radius: 12px; width: 100px; height: 30px;">Add</button><br />
+                </form>
+                <br />
+            </div>
+        </div>
+
+
+
+    </body>

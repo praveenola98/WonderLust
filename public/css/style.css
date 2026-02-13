@@ -1,0 +1,207 @@
+/* Navbar */
+
+body{
+   font-family: "Plus Jakarta Sans", sans-serif !important;
+   display:flex;
+   flex-direction: column;
+   min-height: 100vh;
+}
+
+.container{
+    flex: 1;
+}
+.navbar{
+    height: 5rem;
+    background-color: aliceblue;
+}
+.fa-compass{
+    color: red;
+    font-size: 2rem;
+}
+
+.nav-link{
+    color:#222222 !important;
+}
+
+/* footer*/
+.f-info-links a{
+    text-decoration: none;
+    color:#222222;
+}
+
+.f-info-links a:hover{
+  
+    text-decoration: underline;
+  
+}
+
+.f-info-links, .f-info-socials, .f-info-brand{
+    width: 100%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+
+
+.f-info-socials i{
+    font-size: 1.2rem;
+    margin-right: 1.3rem;
+} 
+
+.f-info{
+    text-align: center;
+  height: 8rem;
+  background-color: rgb(173, 211, 154);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: space-evenly;
+}
+
+/* CARDS */
+.listing-card{
+    border: none !important;
+    margin-bottom: 2rem;
+}
+
+.card-img-top{
+    border-radius: 1rem !important;
+    width: 100% !important;
+    object-fit: cover !important;
+}
+
+.card-body{
+    padding: 0 !important;
+}
+
+.card-text{
+    font-weight: 400 !important;
+}
+
+/* anker tag in index.js */
+.listing-link{
+    text-decoration:none ;
+}
+
+/* card effect */
+.card-img-overlay{
+opacity: 0;
+}
+
+.card-img-overlay:hover{
+opacity: 0.2;
+background-color: rgb(0, 0, 0);
+}
+
+
+
+.add-btn{
+  background-color: red !important;
+  border: none !important;
+
+}
+
+.listing-img2 {
+    border-radius: 12px;
+   height: 30em;
+    
+}
+
+.updateimage{
+    border-radius: 12px;
+    background-color: aqua;
+}
+
+ body { margin: 0; padding: 0; }
+#map {
+  height: 400px;
+  width: 87vw;
+}
+
+.category-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  border-left: 5px solid #ff385c; /* Airbnb vibe */
+  padding-left: 12px;
+  color: #222;
+}
+
+.category-title span {
+  color: #ff385c;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+ #filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+
+    /* Filter item */
+    .filter {
+      text-align: center;
+      margin-right: 1.5rem;
+      margin-top: 1rem;
+      opacity: 0.7;
+      min-width: 70px;
+    }
+
+    .filter:hover {
+      opacity: 1;
+      cursor: pointer;
+    }
+
+    .filter p {
+      font-size: 0.8rem;
+    }
+
+    .tax-info {
+      display: none;
+    }
+
+    .tax-toggle {
+      border: 2px solid black;
+      border-radius: 7px;
+      padding-right: 4px;
+      padding-left: 4px;
+    }
+
+
+    .filter-link {
+  text-decoration: none;
+  
+}
+
+    @media (max-width: 2058px) {
+      #filters {
+        flex-wrap: nowrap;
+        /* ❌ wrap band */
+        overflow-x: auto;
+        /* 👉 horizontal scroll */
+        overflow-y: hidden;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 1rem;
+      }
+
+      #filters::-webkit-scrollbar {
+        display: none;
+        /* scrollbar hide */
+      }
+
+      .filter {
+        flex: 0 0 auto;
+        /* ek row me hi rahe */
+        margin-right: 1.5rem;
+        margin-top: 1rem;
+      }
+
+      .tax-toggle {
+        flex: 0 0 auto;
+        margin-left: 1rem;
+      }
+    }

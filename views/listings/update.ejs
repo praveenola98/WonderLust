@@ -1,0 +1,50 @@
+<% layout("layouts/boilerplate")%>
+
+    <body>
+        <div class="row">
+    <div class="col-8">
+        <h3><b>Update : </b>
+            <%=listing.title%>
+        </h3>
+        <br/>
+        
+        <div class="mb-3 "><img class="updateimage"src="<%=listing.image.url%> " style="height:30vh;">
+</div>
+         
+        <form action="/listings/<%=listing._id%>?_method=PATCH" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
+
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type ="text" value="<%=listing.title%>" name="listing[title]" class="form-control" required><br />
+                <div class="invalid-feedback">Please enter Title</div>
+            </div>
+            
+
+            <div class="mb-3">
+                <label for="image" class="form-label">Uploaad new Image</label>
+                <input type ="file" name="listing[image]" class="form-control" ><br />
+            </div>
+          
+            
+            <div class="mb-3">
+                <label for="Description" class="form-label">Description</label>
+                 <input type="text" value="<%=listing.description%>" name="listing[description]" class="form-control" required><br />
+                 <div class="invalid-feedback">Please enter description</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="Price" class="form-label">Price</label>
+                <input type="number" value="<%=listing.price%>" name="listing[price]" class="form-control" required><br />
+                <div class="invalid-feedback">Please enter Price</div>
+            </div>
+
+
+
+            <button class="add-btn " style="color:white; border-radius: 12px; width: 100px; height: 30px;" >Update</button>
+        </form>
+ <br/>
+        </div>
+        </div>
+
+        <script src="/js/script.js"></script>
+    </body>

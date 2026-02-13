@@ -1,0 +1,208 @@
+<% layout("layouts/boilerplate")%>
+
+  <style>
+    #filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+
+    /* Filter item */
+    .filter {
+      text-align: center;
+      margin-right: 1.5rem;
+      margin-top: 1rem;
+      opacity: 0.7;
+      min-width: 70px;
+    }
+
+    .filter:hover {
+      opacity: 1;
+      cursor: pointer;
+    }
+
+    .filter p {
+      font-size: 0.8rem;
+    }
+
+    .tax-info {
+      display: none;
+    }
+
+    .tax-toggle {
+      border: 2px solid black;
+      border-radius: 7px;
+      padding-right: 4px;
+      padding-left: 4px;
+    }
+
+
+    .filter-link {
+  text-decoration: none;
+  
+}
+
+    @media (max-width: 2058px) {
+      #filters {
+        flex-wrap: nowrap;
+        /* ❌ wrap band */
+        overflow-x: auto;
+        /* 👉 horizontal scroll */
+        overflow-y: hidden;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 1rem;
+      }
+
+      #filters::-webkit-scrollbar {
+        display: none;
+        /* scrollbar hide */
+      }
+
+      .filter {
+        flex: 0 0 auto;
+        /* ek row me hi rahe */
+        margin-right: 1.5rem;
+        margin-top: 1rem;
+      }
+
+      .tax-toggle {
+        flex: 0 0 auto;
+        margin-left: 1rem;
+      }
+    }
+  </style>
+
+  <div id="filters">
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=Trending"><i class="fa fa-fire" aria-hidden="true"></i>
+       <p>Trending</p></a></div>
+      <!-- <div><a class="navbar-brand" href="/login"><i class="fa fa-fire" aria-hidden="true"></i></a></div> -->
+      
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=Rooms"><i class="fa fa-bed" aria-hidden="true"></i></div>
+      <p>Rooms</p>
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=Iconic Cities"><i class="fa fa-area-chart" aria-hidden="true"></i></div>
+      <p>Iconic Cities</p></a>
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=mountains"><i class="fas fa-mountain"></i></div>
+      <p>Mountains</p></a>
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=Castles"><i class="fa-brands fa-fort-awesome"></i></div>
+      <p>Castles</p></a>
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=Amazing Pools"><i class="fa-solid fa-person-swimming"></i></div>
+      <p>Amazing Pools</p></a>
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=Camping"><i class="fa-solid fa-campground"></i></div>
+      <p>Camping</p></a>
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=Farms"><i class="fa-solid fa-cow"></i></div>
+      <p>Farms</p></a>
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=Arctic"><i class="fa-solid fa-snowflake"></i></div>
+      <p>Arctic</p></a>
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=Snow Hills"><i class="fa-solid fa-snowman"></i></div>
+      <p>Snow Hills</p></a>
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=Forest"><i class="fa-solid fa-tree"></i></div>
+      <p>Forest</p></a>
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=Highwaay Side"><i class="fa-solid fa-road"></i></div>
+      <p>Highhway Side</p></a>
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=Town"><i class="fa-solid fa-city"></i></div>
+      <p>Town</p></a>
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=Hostel"><i class="fa-solid fa-hotel"></i></div>
+      <p>Hostel</p></a>
+    </div>
+    <div class="filter">
+      <div><a class="filter-link" href="/listings/category?type=River Side"><i class="fa-solid fa-water"></i></div>
+      <p>River side</p></a>
+    </div>
+    
+    
+    <div class="tax-toggle">
+    <div class="form-check-reverse form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+      <label class="form-check-label" for="switchCheckDefault">Display total after Taxes</label>
+    </div>
+
+  </div>
+
+
+  </div>
+  
+<h3 class="category-title">
+  Search results for: <%= q %>
+</h3>
+ <% if (alllistings.length === 0) { %>
+    <div class="alert alert-warning">
+      No Search Result Avaailable For : <%= q %>.
+    </div>
+  <% } else { %>
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+    <%for(listing of alllistings) {%>
+      <a class="listing-link" href="/listings/<%=listing._id%>">
+        <div class="card col listing-card">
+          <img class="card-img-top" src="<%=listing.image.url%> " style="height: 20rem;">
+          <div class="card-img-overlay"></div>
+          <div class="card-body">
+            <p class="card-text">
+              <b>
+                <%=listing.title%>
+              </b><br />
+              <b>Price:</b>
+              ₹<%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %>/Night
+                <i class="tax-info"> &nbsp;&nbsp;+18% GST</i>
+            </p>
+            </p>
+
+          </div>
+        </div>
+      </a>
+      <% }%>
+  </div>
+<%}%>
+
+
+ <script>
+    let taxSwitch = document.getElementById("switchCheckDefault");
+    taxSwitch.addEventListener("click", () => {
+
+      let taxinfo = document.getElementsByClassName("tax-info")
+
+      for (taxinfo of taxinfo) {
+        if (taxinfo.style.display != "inline") {
+          taxinfo.style.display = "inline"
+        } else {
+          taxinfo.style.display = "none"
+        }
+
+      }
+
+
+
+    })
+  </script>
+
+
+
+  <script src="/js/script.js"></script>

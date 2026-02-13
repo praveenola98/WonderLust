@@ -16,6 +16,7 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js")
+const Listing = require("./models/listing.js");
 
 
 
@@ -123,9 +124,10 @@ async function main() {
 
 
 // home route
-// app.get("/", (req, res) => {
-//     res.render("listings/home")
-// })
+app.get("/", async(req, res) => {
+    let alllistings = await Listing.find({})
+    res.render("listings/index.ejs", { alllistings })
+})
 
 
 

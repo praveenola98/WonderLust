@@ -49,6 +49,7 @@
                 </form>
             </div>
 
+
             <div class="navbar-nav ms-auto">
                 <a class="nav-item nav-link" href="/listings/new">WL your home</a>
                 <%if(!currUser){%>
@@ -65,3 +66,13 @@
         </div>
     </div>
 </nav>
+
+<script>
+  const navbarCollapse = document.getElementById("navbarNavAltMarkup");
+  navbarCollapse.addEventListener("show.bs.collapse", function () {
+    document.body.style.overflow = "hidden";
+  });
+  navbarCollapse.addEventListener("hide.bs.collapse", function () {
+    document.body.style.overflow = "auto";
+  });
+</script>

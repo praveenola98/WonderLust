@@ -11,7 +11,7 @@ body{
     flex: 1;
 }
 .navbar{
-    height: 5rem;
+    height: 3.9rem;
     background-color: aliceblue;
 }
 .fa-compass{
@@ -22,6 +22,45 @@ body{
 .nav-link{
     color:#222222 !important;
 }
+/* Mobile navbar overlay */
+
+ .search-btn {
+        background-color: red;
+        color: white;
+        border-radius: 25px;
+        padding: 0 1rem 0 1rem;
+    }
+
+    .search-btn:hover {
+        background-color: red;
+        color: white;
+    }
+
+    .search-btn i {
+        display: inline;
+        margin-right: 0.5rem;
+    }
+
+    .search-input {
+        border-radius: 25px;
+
+
+    }
+@media (max-width: 768px) {
+  .navbar-collapse {
+    position: fixed;
+    top: 4.2rem; /* navbar height */
+    left: 0;
+    width: 100%;
+    height:25vh;
+    background-color: rgb(107, 105, 105);
+    padding-top: rem;
+    padding-left: 1rem;
+    z-index: 999;
+    border-radius: 12px;
+  }
+}
+
 
 /* footer*/
 .f-info-links a{

@@ -1,0 +1,306 @@
+<% layout("layouts/boilerplate") %>
+    <style>
+        .chat-container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        #chatBox {
+            height: 65vh !important;
+            overflow-y: auto;
+            background: #ece5dd;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #ddd !important;
+        }
+
+        /* message row */
+        .msg-row {
+            display: flex;
+            margin: 6px 0;
+        }
+
+        /* received */
+        .other {
+            justify-content: flex-start;
+        }
+
+        /* sent */
+        .me {
+            justify-content: flex-end;
+        }
+
+        /* bubble */
+        .bubble {
+            max-width: 70%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        /* received bubble */
+        .other .bubble {
+            background: white;
+        }
+
+        /* sent bubble */
+        .me .bubble {
+            background: #dcf8c6;
+        }
+
+        /* ticks */
+        .tick {
+            font-size: 12px;
+            margin-left: 6px;
+        }
+
+        /* input area */
+        .chat-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .chat-form input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+        }
+
+        .chat-form button {
+            border: none;
+            background: #00a884;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-weight: 600;
+        }
+
+        /* typing */
+        #typingIndicator {
+            font-size: 12px;
+            color: #666;
+            height: 16px;
+            margin-top: 5px;
+        }
+
+        /* mobile */
+        @media(max-width:600px) {
+            .bubble {
+                max-width: 85%
+            }
+
+            #chatBox {
+                height: 72vh !important;
+            }
+        }
+        /* bottom chat bar */
+.chat-input-area{
+    position:sticky;
+    bottom:0;
+    background:#f0f2f5;
+    padding:10px;
+    border-top:1px solid #ddd;
+    margin-top:10px;
+}
+
+/* form layout */
+.chat-form{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+/* text input */
+.chat-form input{
+    flex:1;
+    padding:12px 16px;
+    border-radius:25px;
+    border:1px solid #ccc;
+    outline:none;
+    font-size:14px;
+    background:white;
+}
+
+/* send button */
+.chat-form button{
+    height:42px;
+    width:42px;
+    border-radius:50%;
+    border:none;
+    background:#00a884;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:.2s;
+}
+
+.chat-form button:hover{
+    background:#019874;
+}
+
+/* typing text */
+#typingIndicator{
+    font-size:12px;
+    color:#667781;
+    margin-bottom:4px;
+    padding-left:8px;
+    height:16px;
+}
+
+/* mobile */
+@media(max-width:600px){
+    .chat-input-area{
+        padding:8px;
+    }
+}
+
+    </style>
+
+
+    <h3>
+        Chat about: <%= conversation.listing.title %>
+    </h3>
+
+    <hr>
+
+    <div id="chatBox" style="height:400px; overflow-y:auto; border:1px solid black; padding:10px">
+
+        <% messages.forEach(msg=> { %>
+
+            <div class="msg-row <%= msg.sender._id.toString()===currUser._id.toString()?'me':'other' %>">
+                <div class="bubble">
+                    <%= msg.text %>
+
+                        <% if(msg.sender._id.toString()===currUser._id.toString()) { %>
+                            <span class="tick" style="color:<%= msg.seenBy.length>1 ? 'blue' : '#555' %>">
+                                <%= msg.seenBy.length>1 ? "✓✓" : "✓" %>
+                            </span>
+                            <% } %>
+                </div>
+            </div>
+
+
+            <% }) %>
+
+    </div>
+
+    <hr>
+
+    <div class="chat-input-area">
+
+    <div id="typingIndicator"></div>
+
+    <form class="chat-form" method="POST" action="/chat/<%= conversation._id %>">
+        <input type="text" name="text" placeholder="Type a message" required autocomplete="off">
+        <button type="submit">➤</button>
+    </form>
+
+</div>
+
+
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        const socket = io();
+
+        const conversationId = "<%= conversation._id %>";
+        const senderId = "<%= currUser._id %>";
+        const username = "<%= currUser.username %>";
+
+        socket.emit("joinRoom", conversationId);
+
+        const form = document.querySelector("form");
+        const input = document.querySelector("input[name='text']");
+        const chatBox = document.getElementById("chatBox");
+        const typingIndicator = document.getElementById("typingIndicator");
+
+        function scrollToBottom() {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // open pe bottom
+        window.onload = scrollToBottom;
+
+
+
+        //send message
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const messageText = input.value.trim();
+            if (!messageText) return;
+
+            // apni screen pe turant show
+            const myDiv = document.createElement("div");
+            myDiv.className = "msg-row me";
+            myDiv.innerHTML = `<div class="bubble">${messageText} <span class="tick">✓</span></div>`;
+
+            chatBox.appendChild(myDiv);
+
+            scrollToBottom();
+
+            socket.emit("sendMessage", {
+                conversationId,
+                senderId,
+                username,
+                text: messageText
+            });
+
+            socket.emit("stopTyping", { conversationId });
+
+            input.value = "";
+        });
+
+
+
+        // receive message
+        socket.on("receiveMessage", (msg) => {
+            const div = document.createElement("div");
+            div.className = "msg-row other";
+            div.innerHTML = `<div class="bubble">${msg.text}</div>`;
+
+            chatBox.appendChild(div);
+
+            scrollToBottom();
+        });
+
+
+
+        // seen wala double tick
+        socket.on("messagesSeen", () => {
+            document.querySelectorAll(".tick").forEach(t => {
+                t.innerHTML = "✓✓";
+                t.style.color = "blue";
+            });
+        });
+
+
+
+        // typing indicator
+        let typingTimeout;
+
+        input.addEventListener("input", () => {
+            socket.emit("typing", { conversationId, username });
+
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                socket.emit("stopTyping", { conversationId });
+            }, 1000);
+        });
+
+        socket.on("showTyping", (name) => {
+            typingIndicator.innerText = name + " is typing...";
+        });
+
+        socket.on("hideTyping", () => {
+            typingIndicator.innerText = "";
+        });
+    </script>

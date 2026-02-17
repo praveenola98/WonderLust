@@ -38,6 +38,10 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
                 <a class="nav-item nav-link" href="/listings">Explore</a>
+                <a class="nav-item nav-link position-relative" href="/chat/inbox">
+    <i class="fa-regular fa-message" style="color: rgba(234, 42, 16, 1.00);"></i> 
+    <b>Inbox</b>
+</a>
             </div>
 
             <!-- search area -->
@@ -47,6 +51,7 @@
                     <button class="btn search-btn" type="submit"><i
                             class="fa-solid fa-magnifying-glass"></i>Search</button>
                 </form>
+                
             </div>
 
 
@@ -55,10 +60,13 @@
                 <%if(!currUser){%>
                     <a class="nav-item nav-link " href="/signup"><b>SignUp</b></a>
                     <a class="nav-item nav-link" href="/login"><b>Login</b></a>
+                    
                     <%}%>
                         <%if(currUser){%>
                             <a class="nav-item nav-link" href="/logout"><b>Logout</b></a>
                             <%}%>
+                <a class="nav-item nav-link" href="/userdetail"><b><i class="fa-regular fa-circle-user" style="color: rgba(234, 42, 16, 1.00);"></i></b></a>
+
 
 
 

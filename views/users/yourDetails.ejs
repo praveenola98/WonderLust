@@ -1,0 +1,148 @@
+<% layout("layouts/boilerplate")%>
+
+    <style>
+        /* =========================
+   PROFILE PAGE CONTAINER
+========================= */
+
+        body {
+            background-color: #f7f7f7;
+        }
+
+        .details {
+            max-width: 90vw;
+            margin: 1rem 0rem;
+            background: #ffffff;
+            padding: 1rem 1rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        /* =========================
+   PROFILE IMAGE
+========================= */
+
+        .pic {
+            flex: 0 0 auto;
+        }
+
+        .image {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #FF385C;
+        }
+
+        /* =========================
+   USER DETAILS
+========================= */
+
+        .personaldetails {
+            flex: 1;
+        }
+
+        .personaldetails h2 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #222222;
+        }
+
+        .personaldetails p {
+            font-size: 0.95rem;
+            color: #717171;
+            margin-bottom: 0.5rem;
+        }
+
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .message-icon {
+            font-size: 1.5rem;
+            position: relative;
+            text-decoration: none;
+        }
+
+        .green-dot {
+            width: 10px;
+            height: 10px;
+            background: #2ecc71;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            right: -2px;
+        }
+
+        /* =========================
+   RESPONSIVE DESIGN
+========================= */
+
+        @media (max-width: 378px) {
+            .details {
+
+                padding: 2rem 1.5rem;
+            }
+
+            .image {
+                width: 70px;
+                height: 70px;
+            }
+
+        }
+    </style>
+    <div class="details">
+        <div class="pic"><img class="image"
+                src="https://thumbs.dreamstime.com/b/default-avatar-profile-icon-social-media-user-image-gray-blank-silhouette-vector-illustration-305503988.jpg">
+        </div>
+        <div class="personaldetails">
+            <h2>
+                <%= user.username %>
+            </h2>
+            <p>
+                <%= user.email %>
+            </p>
+        </div>
+    </div>
+    <div class="profile-header">
+        
+
+       <h3> <a class="nav-item nav-link position-relative" href="/chat/inbox">
+    <i class="fa-regular fa-message" style="color: rgba(234, 42, 16, 1.00);"></i> 
+    <b>Inbox</b>
+</a></h3>
+<br/>
+    </div>
+
+    <div class="listings">
+        <h4>Your Listings</h4>
+        <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+            <%for(listing of listings) {%>
+                <a class="listing-link" href="/listings/<%=listing._id%>">
+                    <div class="card col listing-card">
+                        <img class="card-img-top" src="<%=listing.image.url%> " style="height: 20rem;">
+                        <div class="card-img-overlay"></div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <b>
+                                    <%=listing.title%>
+                                </b><br />
+                                <b>Price:</b>
+                                ₹<%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %>/Night
+                                    <i class="tax-info"> &nbsp;&nbsp;+18% GST</i>
+                            </p>
+                            </p>
+
+                        </div>
+                    </div>
+                </a>
+
+                <% }%>
+        </div>
+    </div>

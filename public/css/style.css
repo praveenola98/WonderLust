@@ -18,6 +18,10 @@ body{
     color: red;
     font-size: 2rem;
 }
+.fa-circle-user{
+  color: red;
+    font-size: 1.5rem;
+}
 
 .nav-link{
     color:#222222 !important;
@@ -52,7 +56,7 @@ body{
     top: 4.2rem; /* navbar height */
     left: 0;
     width: 100%;
-    height:25vh;
+    height:35vh;
     background-color: rgb(107, 105, 105);
     padding-top: rem;
     padding-left: 1rem;

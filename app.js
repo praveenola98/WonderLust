@@ -220,91 +220,13 @@ const io = new Server(server);
 
 app.set("io", io);
 
-server.listen(3000, () => {
-    console.log("server started");
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
+    console.log("server started on port", PORT);
 });
 
 
-io.on("connection", (socket) => {
-
-    console.log("User connected");
-
-    // USER PERSONAL ROOM
-    socket.on("joinUserRoom", (userId)=>{
-        socket.join("user_"+userId);
-    });
-
-    // CHAT ROOM
-    socket.on("joinRoom", (conversationId) => {
-        socket.join(conversationId);
-    });
-
-    // typing
-    socket.on("typing", (data) => {
-        socket.to(data.conversationId).emit("showTyping", data.username);
-    });
-
-    socket.on("stopTyping", (data) => {
-        socket.to(data.conversationId).emit("hideTyping");
-    });
-
-    // SEEN MESSAGE
-    socket.on("markSeen", async ({ conversationId, userId }) => {
-
-        const Message = require("./models/message");
-
-        await Message.updateMany(
-            {
-                conversation: conversationId,
-                sender: { $ne: userId },
-                seenBy: { $ne: userId }
-            },
-            { $addToSet: { seenBy: userId } }
-        );
-
-        // double tick to room
-        io.to(conversationId).emit("messagesSeen", {});
-
-        // remove green dot in inbox
-        io.to("user_"+userId).emit("updateInboxSeen",{conversationId});
-    });
-
-    // SEND MESSAGE
-    socket.on("sendMessage", async (data) => {
-
-        const Message = require("./models/message");
-        const Conversation = require("./models/conversation");
-
-        const msg = await Message.create({
-            conversation: data.conversationId,
-            sender: data.senderId,
-            text: data.text,
-            seenBy: [data.senderId]
-        });
-
-        await Conversation.findByIdAndUpdate(data.conversationId,{
-            lastMessage:data.text,
-            updatedAt:new Date()
-        });
-
-        // ✅ IMPORTANT FIX — send to entire room (both users)
-        io.to(data.conversationId).emit("receiveMessage",{
-            text:data.text,
-            sender:data.senderId,
-            username:data.username,
-            conversationId:data.conversationId
-        });
-
-        // inbox update
-        io.to(data.conversationId).emit("updateInbox",{
-            conversationId:data.conversationId,
-            lastMessage:data.text,
-            sender:data.senderId
-        });
-
-    });
-
-});
 io.on("connection", (socket) => {
 
     console.log("User connected");

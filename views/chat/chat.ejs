@@ -97,70 +97,70 @@
                 height: 72vh !important;
             }
         }
+
         /* bottom chat bar */
-.chat-input-area{
-    position:sticky;
-    bottom:0;
-    background:#f0f2f5;
-    padding:10px;
-    border-top:1px solid #ddd;
-    margin-top:10px;
-}
+        .chat-input-area {
+            position: sticky;
+            bottom: 0;
+            background: #f0f2f5;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            margin-top: 10px;
+        }
 
-/* form layout */
-.chat-form{
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
+        /* form layout */
+        .chat-form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-/* text input */
-.chat-form input{
-    flex:1;
-    padding:12px 16px;
-    border-radius:25px;
-    border:1px solid #ccc;
-    outline:none;
-    font-size:14px;
-    background:white;
-}
+        /* text input */
+        .chat-form input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            outline: none;
+            font-size: 14px;
+            background: white;
+        }
 
-/* send button */
-.chat-form button{
-    height:42px;
-    width:42px;
-    border-radius:50%;
-    border:none;
-    background:#00a884;
-    color:white;
-    font-size:18px;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    transition:.2s;
-}
+        /* send button */
+        .chat-form button {
+            height: 42px;
+            width: 42px;
+            border-radius: 50%;
+            border: none;
+            background: #00a884;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: .2s;
+        }
 
-.chat-form button:hover{
-    background:#019874;
-}
+        .chat-form button:hover {
+            background: #019874;
+        }
 
-/* typing text */
-#typingIndicator{
-    font-size:12px;
-    color:#667781;
-    margin-bottom:4px;
-    padding-left:8px;
-    height:16px;
-}
+        /* typing text */
+        #typingIndicator {
+            font-size: 12px;
+            color: #667781;
+            margin-bottom: 4px;
+            padding-left: 8px;
+            height: 16px;
+        }
 
-/* mobile */
-@media(max-width:600px){
-    .chat-input-area{
-        padding:8px;
-    }
-}
-
+        /* mobile */
+        @media(max-width:600px) {
+            .chat-input-area {
+                padding: 8px;
+            }
+        }
     </style>
 
 
@@ -195,112 +195,120 @@
 
     <div class="chat-input-area">
 
-    <div id="typingIndicator"></div>
+        <div id="typingIndicator"></div>
 
-    <form class="chat-form" method="POST" action="/chat/<%= conversation._id %>">
-        <input type="text" name="text" placeholder="Type a message" required autocomplete="off">
-        <button type="submit">➤</button>
-    </form>
+        <form class="chat-form" method="POST" action="/chat/<%= conversation._id %>">
+            <input type="text" name="text" placeholder="Type a message" required autocomplete="off">
+            <button type="submit">➤</button>
+        </form>
 
-</div>
-
-
-
-    <script src="/socket.io/socket.io.js"></script>
-
-    <script>
-        const socket = io();
-
-        const conversationId = "<%= conversation._id %>";
-        const senderId = "<%= currUser._id %>";
-        const username = "<%= currUser.username %>";
-
-        socket.emit("joinRoom", conversationId);
-
-        const form = document.querySelector("form");
-        const input = document.querySelector("input[name='text']");
-        const chatBox = document.getElementById("chatBox");
-        const typingIndicator = document.getElementById("typingIndicator");
-
-        function scrollToBottom() {
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        // open pe bottom
-        window.onload = scrollToBottom;
+    </div>
 
 
 
-        //send message
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
+ <script src="/socket.io/socket.io.js"></script>
 
-            const messageText = input.value.trim();
-            if (!messageText) return;
+<script>
+const socket = io();
 
-            // apni screen pe turant show
-            const myDiv = document.createElement("div");
-            myDiv.className = "msg-row me";
-            myDiv.innerHTML = `<div class="bubble">${messageText} <span class="tick">✓</span></div>`;
+const conversationId = "<%= conversation._id %>";
+const senderId = "<%= currUser._id %>";
+const username = "<%= currUser.username %>";
 
-            chatBox.appendChild(myDiv);
+// ✅ correct order
+socket.emit("joinUserRoom", senderId);
+socket.emit("joinRoom", conversationId);
 
-            scrollToBottom();
+// tell server chat opened
+socket.emit("markSeen", {
+    conversationId,
+    userId: senderId
+});
 
-            socket.emit("sendMessage", {
-                conversationId,
-                senderId,
-                username,
-                text: messageText
-            });
+const form = document.querySelector("form");
+const input = document.querySelector("input[name='text']");
+const chatBox = document.getElementById("chatBox");
+const typingIndicator = document.getElementById("typingIndicator");
 
-            socket.emit("stopTyping", { conversationId });
+function scrollToBottom() {
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
 
-            input.value = "";
+window.onload = scrollToBottom;
+
+
+// SEND MESSAGE
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const messageText = input.value.trim();
+    if (!messageText) return;
+
+    socket.emit("sendMessage", {
+        conversationId,
+        senderId,
+        username,
+        text: messageText
+    });
+
+    input.value = "";
+});
+
+
+// RECEIVE MESSAGE (real-time)
+socket.on("receiveMessage", (msg) => {
+
+    const isMe = msg.sender === senderId;
+
+    const div = document.createElement("div");
+    div.className = "msg-row " + (isMe ? "me" : "other");
+
+    div.innerHTML = `
+        <div class="bubble">
+            ${msg.text}
+            ${isMe ? '<span class="tick">✓</span>' : ''}
+        </div>
+    `;
+
+    chatBox.appendChild(div);
+    scrollToBottom();
+
+    // mark seen automatically
+    if(!isMe){
+        socket.emit("markSeen", {
+            conversationId,
+            userId: senderId
         });
+    }
+});
 
 
-
-        // receive message
-        socket.on("receiveMessage", (msg) => {
-            const div = document.createElement("div");
-            div.className = "msg-row other";
-            div.innerHTML = `<div class="bubble">${msg.text}</div>`;
-
-            chatBox.appendChild(div);
-
-            scrollToBottom();
-        });
+// DOUBLE TICK
+socket.on("messagesSeen", () => {
+    document.querySelectorAll(".tick").forEach(t => {
+        t.innerHTML = "✓✓";
+        t.style.color = "blue";
+    });
+});
 
 
+// TYPING
+let typingTimeout;
 
-        // seen wala double tick
-        socket.on("messagesSeen", () => {
-            document.querySelectorAll(".tick").forEach(t => {
-                t.innerHTML = "✓✓";
-                t.style.color = "blue";
-            });
-        });
+input.addEventListener("input", () => {
+    socket.emit("typing", { conversationId, username });
 
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+        socket.emit("stopTyping", { conversationId });
+    }, 1000);
+});
 
+socket.on("showTyping", (name) => {
+    typingIndicator.innerText = name + " is typing...";
+});
 
-        // typing indicator
-        let typingTimeout;
-
-        input.addEventListener("input", () => {
-            socket.emit("typing", { conversationId, username });
-
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => {
-                socket.emit("stopTyping", { conversationId });
-            }, 1000);
-        });
-
-        socket.on("showTyping", (name) => {
-            typingIndicator.innerText = name + " is typing...";
-        });
-
-        socket.on("hideTyping", () => {
-            typingIndicator.innerText = "";
-        });
-    </script>
+socket.on("hideTyping", () => {
+    typingIndicator.innerText = "";
+});
+</script>

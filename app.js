@@ -30,8 +30,8 @@ const { Server } = require("socket.io");
 if (process.env.NODE_ENV != "production") {
     require("dotenv").config();
 }
-const dbUrl= process.env.ATLASDB_URL
-// const dbUrl = "mongodb://127.0.0.1:27017/wonderlust"
+// const dbUrl = process.env.ATLASDB_URL
+const dbUrl = "mongodb://127.0.0.1:27017/wonderlust"
 
 
 
@@ -88,8 +88,8 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
-    res.locals.currUser = req.user;
-    res.locals.currUser = req.user;
+    res.locals.currUser = req.user || null;
+
     res.locals.formatTime = (date) => {
         const now = new Date();
         const msgDate = new Date(date);
@@ -144,8 +144,8 @@ app.use("/chat", chatRoutes);
 
 main().then((res) => { console.log("mongoo connection success") }).catch((err) => { console.log(err) })
 async function main() {
-    await mongoose.connect(dbUrl)
-    // await mongoose.connect("mongodb://127.0.0.1:27017/wonderlust")
+    // await mongoose.connect(dbUrl)
+    await mongoose.connect("mongodb://127.0.0.1:27017/wonderlust")
 };
 
 
@@ -229,48 +229,158 @@ io.on("connection", (socket) => {
 
     console.log("User connected");
 
-    // join conversation room
+    // USER PERSONAL ROOM
+    socket.on("joinUserRoom", (userId)=>{
+        socket.join("user_"+userId);
+    });
+
+    // CHAT ROOM
     socket.on("joinRoom", (conversationId) => {
         socket.join(conversationId);
     });
-    // typing start
+
+    // typing
     socket.on("typing", (data) => {
         socket.to(data.conversationId).emit("showTyping", data.username);
     });
 
-    // typing stop
     socket.on("stopTyping", (data) => {
         socket.to(data.conversationId).emit("hideTyping");
     });
-    
 
+    // SEEN MESSAGE
+    socket.on("markSeen", async ({ conversationId, userId }) => {
 
+        const Message = require("./models/message");
 
-    // send message
+        await Message.updateMany(
+            {
+                conversation: conversationId,
+                sender: { $ne: userId },
+                seenBy: { $ne: userId }
+            },
+            { $addToSet: { seenBy: userId } }
+        );
+
+        // double tick to room
+        io.to(conversationId).emit("messagesSeen", {});
+
+        // remove green dot in inbox
+        io.to("user_"+userId).emit("updateInboxSeen",{conversationId});
+    });
+
+    // SEND MESSAGE
     socket.on("sendMessage", async (data) => {
 
         const Message = require("./models/message");
         const Conversation = require("./models/conversation");
 
         const msg = await Message.create({
-            conversation: new mongoose.Types.ObjectId(data.conversationId),
-            sender: new mongoose.Types.ObjectId(data.senderId),
+            conversation: data.conversationId,
+            sender: data.senderId,
             text: data.text,
-            seenBy: [new mongoose.Types.ObjectId(data.senderId)]
+            seenBy: [data.senderId]
         });
 
-
-        await Conversation.findByIdAndUpdate(data.conversationId, {
-            lastMessage: data.text,
-            updatedAt: new Date() 
+        await Conversation.findByIdAndUpdate(data.conversationId,{
+            lastMessage:data.text,
+            updatedAt:new Date()
         });
 
-
-        socket.to(data.conversationId).emit("receiveMessage", {
-            text: msg.text,
-            sender: data.username
+        // ✅ IMPORTANT FIX — send to entire room (both users)
+        io.to(data.conversationId).emit("receiveMessage",{
+            text:data.text,
+            sender:data.senderId,
+            username:data.username,
+            conversationId:data.conversationId
         });
 
+        // inbox update
+        io.to(data.conversationId).emit("updateInbox",{
+            conversationId:data.conversationId,
+            lastMessage:data.text,
+            sender:data.senderId
+        });
+
+    });
+
+});
+io.on("connection", (socket) => {
+
+    console.log("User connected");
+
+    // USER PERSONAL ROOM
+    socket.on("joinUserRoom", (userId)=>{
+        socket.join("user_"+userId);
+    });
+
+    // CHAT ROOM
+    socket.on("joinRoom", (conversationId) => {
+        socket.join(conversationId);
+    });
+
+    // typing
+    socket.on("typing", (data) => {
+        socket.to(data.conversationId).emit("showTyping", data.username);
+    });
+
+    socket.on("stopTyping", (data) => {
+        socket.to(data.conversationId).emit("hideTyping");
+    });
+
+    // SEEN MESSAGE
+    socket.on("markSeen", async ({ conversationId, userId }) => {
+
+        const Message = require("./models/message");
+
+        await Message.updateMany(
+            {
+                conversation: conversationId,
+                sender: { $ne: userId },
+                seenBy: { $ne: userId }
+            },
+            { $addToSet: { seenBy: userId } }
+        );
+
+        // double tick to room
+        io.to(conversationId).emit("messagesSeen", {});
+
+        // remove green dot in inbox
+        io.to("user_"+userId).emit("updateInboxSeen",{conversationId});
+    });
+
+    // SEND MESSAGE
+    socket.on("sendMessage", async (data) => {
+
+        const Message = require("./models/message");
+        const Conversation = require("./models/conversation");
+
+        const msg = await Message.create({
+            conversation: data.conversationId,
+            sender: data.senderId,
+            text: data.text,
+            seenBy: [data.senderId]
+        });
+
+        await Conversation.findByIdAndUpdate(data.conversationId,{
+            lastMessage:data.text,
+            updatedAt:new Date()
+        });
+
+        // ✅ IMPORTANT FIX — send to entire room (both users)
+        io.to(data.conversationId).emit("receiveMessage",{
+            text:data.text,
+            sender:data.senderId,
+            username:data.username,
+            conversationId:data.conversationId
+        });
+
+        // inbox update
+        io.to(data.conversationId).emit("updateInbox",{
+            conversationId:data.conversationId,
+            lastMessage:data.text,
+            sender:data.senderId
+        });
 
     });
 

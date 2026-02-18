@@ -1,3 +1,4 @@
+
 <style>
     .search-btn {
         background-color: red;
@@ -57,12 +58,14 @@
 
             <div class="navbar-nav ms-auto">
                 <a class="nav-item nav-link" href="/listings/new">WL your home</a>
-                <%if(!currUser){%>
+                 <% if(!currUser || !currUser._id){ %>
+
                     <a class="nav-item nav-link " href="/signup"><b>SignUp</b></a>
                     <a class="nav-item nav-link" href="/login"><b>Login</b></a>
                     
                     <%}%>
-                        <%if(currUser){%>
+                        <% if(currUser && currUser._id){ %>
+
                             <a class="nav-item nav-link" href="/logout"><b>Logout</b></a>
                             <%}%>
                 <a class="nav-item nav-link" href="/userdetail"><b><i class="fa-regular fa-circle-user" style="color: rgba(234, 42, 16, 1.00);"></i></b></a>

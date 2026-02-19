@@ -30,8 +30,8 @@ const { Server } = require("socket.io");
 if (process.env.NODE_ENV != "production") {
     require("dotenv").config();
 }
-const dbUrl = process.env.ATLASDB_URL
-// const dbUrl = "mongodb://127.0.0.1:27017/wonderlust"
+// const dbUrl = process.env.ATLASDB_URL
+const dbUrl = "mongodb://127.0.0.1:27017/wonderlust"
 
 
 
@@ -144,8 +144,8 @@ app.use("/chat", chatRoutes);
 
 main().then((res) => { console.log("mongoo connection success") }).catch((err) => { console.log(err) })
 async function main() {
-    await mongoose.connect(dbUrl)
-    // await mongoose.connect("mongodb://127.0.0.1:27017/wonderlust")
+    // await mongoose.connect(dbUrl)
+    await mongoose.connect("mongodb://127.0.0.1:27017/wonderlust")
 };
 
 

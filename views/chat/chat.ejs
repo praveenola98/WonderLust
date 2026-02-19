@@ -206,7 +206,7 @@
 
 
 
- <script src="/socket.io/socket.io.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 
 <script>
 const socket = io();
@@ -215,17 +215,15 @@ const conversationId = "<%= conversation._id %>";
 const senderId = "<%= currUser._id %>";
 const username = "<%= currUser.username %>";
 
-// ✅ correct order
 socket.emit("joinUserRoom", senderId);
 socket.emit("joinRoom", conversationId);
 
-// tell server chat opened
 socket.emit("markSeen", {
     conversationId,
     userId: senderId
 });
 
-const form = document.querySelector("form");
+const form = document.querySelector(".chat-form");
 const input = document.querySelector("input[name='text']");
 const chatBox = document.getElementById("chatBox");
 const typingIndicator = document.getElementById("typingIndicator");
@@ -236,8 +234,7 @@ function scrollToBottom() {
 
 window.onload = scrollToBottom;
 
-
-// SEND MESSAGE
+// SEND MESSAGE (NO PAGE REFRESH EVER)
 form.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -254,9 +251,10 @@ form.addEventListener("submit", (e) => {
     input.value = "";
 });
 
-
-// RECEIVE MESSAGE (real-time)
+// RECEIVE MESSAGE
 socket.on("receiveMessage", (msg) => {
+
+    if(msg.conversationId !== conversationId) return;
 
     const isMe = msg.sender === senderId;
 
@@ -273,7 +271,6 @@ socket.on("receiveMessage", (msg) => {
     chatBox.appendChild(div);
     scrollToBottom();
 
-    // mark seen automatically
     if(!isMe){
         socket.emit("markSeen", {
             conversationId,
@@ -282,15 +279,13 @@ socket.on("receiveMessage", (msg) => {
     }
 });
 
-
-// DOUBLE TICK
+// DOUBLE TICK FIX (only for this conversation)
 socket.on("messagesSeen", () => {
-    document.querySelectorAll(".tick").forEach(t => {
+    document.querySelectorAll(".msg-row.me .tick").forEach(t => {
         t.innerHTML = "✓✓";
         t.style.color = "blue";
     });
 });
-
 
 // TYPING
 let typingTimeout;
